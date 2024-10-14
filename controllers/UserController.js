@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer'); // for sending emails
 const crypto = require('crypto'); 
+require('dotenv').config();
 
 exports.register = async (req, res) => {
     try {
@@ -67,6 +68,8 @@ exports.forgotPassword = async (req, res) => {
         };
 
         await transporter.sendMail(mailOptions);
+      
+
         res.status(200).json({ message: 'Email sent with instructions for resetting password.' });
     } catch (error) {
         res.status(500).json({ error: error.message });

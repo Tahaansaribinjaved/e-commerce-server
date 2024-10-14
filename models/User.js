@@ -31,6 +31,8 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Cart'  // References the Cart model (1:1 relationship)
   }
+  ,resetPasswordToken: {type:String}, // Add this field
+  resetPasswordExpires: {type:Date}, // Add this field
 }, { timestamps: true });
 
 // Hash the password before saving

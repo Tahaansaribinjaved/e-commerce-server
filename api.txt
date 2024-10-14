@@ -1,0 +1,41 @@
+
+### Backend API Ideas
+
+1. **User Authentication**
+   - `POST /api/auth/login`
+   - `POST /api/auth/register`
+   - `POST /api/auth/forgot-password`
+   - `POST /api/auth/reset-password`
+
+2. **Product Management**
+   - `GET /api/products`
+   - `GET /api/products/:id`
+   - `POST /api/products` (Admin)
+   - `PUT /api/products/:id` (Admin)
+   - `DELETE /api/products/:id` (Admin)
+
+3. **Cart Management**
+   - `GET /api/cart`
+   - `POST /api/cart`
+   - `PUT /api/cart/:id`
+   - `DELETE /api/cart/:id`
+
+4. **Order Management**
+   - `POST /api/orders`
+   - `GET /api/orders/:id`
+   - `GET /api/orders` (Admin)
+
+5. **User Profile**
+   - `GET /api/users/:id`
+   - `PUT /api/users/:id`
+
+6. **Admin Management**
+   - `GET /api/admin/products`
+   - `GET /api/admin/orders`
+   - `GET /api/admin/users`
+
+7. **Payment Processing**
+   - `POST /api/payment/checkout`
+
+8. **Email Notifications**
+   - `POST /api/email/send`
