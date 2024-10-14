@@ -1,4 +1,8 @@
-const productSchema = new mongoose.Schema({
+const mongoose = require('mongoose');
+
+// Define the Product schema
+const productSchema = new mongoose.Schema(
+  {
     name: {
       type: String,
       required: true,
@@ -11,19 +15,31 @@ const productSchema = new mongoose.Schema({
       type: Number,
       required: true,
     },
-    stock: {
-      type: Number,
+    category: {
+      type: String,
       required: true,
     },
-    category: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Category',  // References the Category model (M:1 relationship)
-      required: true
+    image: {
+      type: String, // URL for the product image
+      required: true,
     },
-    images: [String],  // Array of image URLs
-  });
-  
-  const Product = mongoose.model('Product', productSchema);
-  
-  module.exports = Product;
-  
+    brand: {
+      type: String,
+    },
+    stock: {
+      type: Number,
+      default: 0,
+    },
+    isFeatured: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  {
+    timestamps: true, // Automatically adds createdAt and updatedAt fields
+  }
+);
+
+// Create and export the Product model
+const Product = mongoose.model('Product', productSchema);
+module.exports = Product;

@@ -10,7 +10,7 @@
 2. **Product Management**
    - `GET /api/products`
    - `GET /api/products/:id`
-   - `POST /api/products` (Admin)
+   - `POST /api/products` (Admin)   
    - `PUT /api/products/:id` (Admin)
    - `DELETE /api/products/:id` (Admin)
 
