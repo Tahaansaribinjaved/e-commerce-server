@@ -6,10 +6,24 @@ const nodemailer = require('nodemailer'); // for sending emails
 const crypto = require('crypto'); 
 require('dotenv').config();
 
+// Register user
 exports.register = async (req, res) => {
     try {
         const { name, email, password, role, address } = req.body;
-        const user = new User({ name, email, password, role, address });
+
+        // Validate input
+        if (!name || !email || !password || !role || !address) {
+            return res.status(400).json({ message: 'All fields are required' });
+        }
+
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(409).json({ message: 'Email already exists' });
+        }
+
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 12);
+        const user = new User({ name, email, password: hashedPassword, role, address });
         await user.save();
         res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
@@ -17,11 +31,17 @@ exports.register = async (req, res) => {
     }
 };
 
+// Login user
 exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
+
+        // Validate input
+        if (!email || !password) {
+            return res.status(400).json({ message: 'Email and password are required' });
+        }
+
         const user = await User.findOne({ email });
-        
         if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
@@ -37,8 +57,13 @@ exports.login = async (req, res) => {
 exports.forgotPassword = async (req, res) => {
     try {
         const { email } = req.body;
-        const user = await User.findOne({ email });
 
+        // Validate input
+        if (!email) {
+            return res.status(400).json({ message: 'Email is required' });
+        }
+
+        const user = await User.findOne({ email });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
@@ -68,8 +93,6 @@ exports.forgotPassword = async (req, res) => {
         };
 
         await transporter.sendMail(mailOptions);
-      
-
         res.status(200).json({ message: 'Email sent with instructions for resetting password.' });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -80,8 +103,13 @@ exports.forgotPassword = async (req, res) => {
 exports.resetPassword = async (req, res) => {
     try {
         const { token, password } = req.body;
-        const user = await User.findOne({ resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } });
 
+        // Validate input
+        if (!token || !password) {
+            return res.status(400).json({ message: 'Token and new password are required' });
+        }
+
+        const user = await User.findOne({ resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } });
         if (!user) {
             return res.status(400).json({ message: 'Token is invalid or has expired' });
         }

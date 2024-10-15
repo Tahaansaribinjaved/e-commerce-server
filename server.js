@@ -3,6 +3,10 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const userRoutes = require('./routes/userRoutes');
 const productRoutes = require('./routes/productRoutes'); // Import product routes
+// const productRoutes = require('./routes/productRoutes');
+const cartRoutes = require('./routes/cartRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
 const cors = require('cors');
 dotenv.config();
 
@@ -24,6 +28,12 @@ app.use('/api/auth', userRoutes);
 
 // Use product routes
 app.use('/api', productRoutes);  // Add product routes
+
+// API Routes
+// app.use('/api', productRoutes);   // Product management routes
+app.use('/api', cartRoutes);      // Cart management routes
+app.use('/api', orderRoutes);     // Order management routes
+app.use('/api', paymentRoutes);   // Payment management routes
 
 // Start the server
 const PORT = process.env.PORT || 5000;
