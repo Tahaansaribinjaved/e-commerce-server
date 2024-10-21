@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-  }, 
+  },
   email: {
     type: String,
     required: true,
@@ -30,9 +30,9 @@ const userSchema = new mongoose.Schema({
   cart: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Cart'  // References the Cart model (1:1 relationship)
-  }
-  ,resetPasswordToken: {type:String}, // Add this field
-  resetPasswordExpires: {type:Date}, // Add this field
+  },
+  resetPasswordToken: { type: String }, // Add this field
+  resetPasswordExpires: { type: Date }, // Add this field
 }, { timestamps: true });
 
 // Hash the password before saving

@@ -21,16 +21,19 @@ exports.register = async (req, res) => {
             return res.status(409).json({ message: 'Email already exists' });
         }
 
-        // Hash password
-        const hashedPassword = await bcrypt.hash(password, 12);
-        const user = new User({ name, email, password: hashedPassword, role, address });
+        // // Hash the password before storing it
+        // const hashedPassword = await bcrypt.hash(password, 12);
+        // console.log('Hashed Password:', hashedPassword); // Log hashed password for debugging
+
+        const user = new User({ name, email,password, role, address });
         await user.save();
+        console.log(user);
+        
         res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
-
 exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -40,27 +43,26 @@ exports.login = async (req, res) => {
             return res.status(400).json({ message: 'Email and password are required' });
         }
 
-        // Check if the user exists in the database
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        // Compare the provided password with the hashed password in the database
+        // Compare the plaintext password with the hashed password
         const isMatch = await bcrypt.compare(password, user.password);
+        console.log('Entered Password:', password);
+        console.log('User Details:', user);
+        
         if (!isMatch) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        // Generate JWT token if the credentials are valid
+        // If the passwords match, create a token
         const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-        // Respond with the token
         res.json({ token });
     } catch (error) {
-        // Handle any errors that occur during the login process
-        console.error('Login error:', error); // Log the error for debugging
-        res.status(500).json({ error: 'Server error' }); // Send a generic server error message
+        console.error('Login error:', error);
+        res.status(500).json({ error: error.message });
     }
 };
 
