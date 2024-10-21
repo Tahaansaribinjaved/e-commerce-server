@@ -1,20 +1,24 @@
-// server/middleware/authMiddleware.js
 const jwt = require('jsonwebtoken');
+const User = require('../models/User'); // Replace with your actual User model
 
-const authMiddleware = (req, res, next) => {
-    const token = req.headers['authorization']?.split(' ')[1]; // Bearer <token>
+const authMiddleware = async (req, res, next) => {
+    const token = req.headers['authorization']?.split(' ')[1]; // Split to get the token
 
     if (!token) {
-        return res.status(403).json({ message: 'No token provided' });
+        return res.status(401).json({ message: 'No token provided' });
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-        if (err) {
-            return res.status(401).json({ message: 'Unauthorized' });
+    try {
+        const decoded = jwt.verify(token,process.env.JWT_SECRET); // Replace with your actual secret key
+        req.user = await User.findById(decoded.id); // Fetch the user by ID
+        if (!req.user) {
+            return res.status(401).json({ message: 'User not found' });
         }
-        req.userId = decoded.id; // Save the user ID for later use
         next();
-    });
+    } catch (error) {
+        console.error('Authentication error:', error);
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
 };
 
 module.exports = authMiddleware;

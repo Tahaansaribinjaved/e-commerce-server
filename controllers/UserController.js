@@ -31,7 +31,6 @@ exports.register = async (req, res) => {
     }
 };
 
-// Login user
 exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -41,17 +40,30 @@ exports.login = async (req, res) => {
             return res.status(400).json({ message: 'Email and password are required' });
         }
 
+        // Check if the user exists in the database
         const user = await User.findOne({ email });
-        if (!user || !(await bcrypt.compare(password, user.password))) {
+        if (!user) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
+        // Compare the provided password with the hashed password in the database
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
+
+        // Generate JWT token if the credentials are valid
         const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        // Respond with the token
         res.json({ token });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        // Handle any errors that occur during the login process
+        console.error('Login error:', error); // Log the error for debugging
+        res.status(500).json({ error: 'Server error' }); // Send a generic server error message
     }
 };
+
 
 // Forgot password
 exports.forgotPassword = async (req, res) => {
