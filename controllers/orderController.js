@@ -21,8 +21,15 @@ const createOrder = async (req, res) => {
 // Get an order by ID
 const getOrderById = async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id).populate('user products.product');
-    if (!order) return res.status(404).json({ message: 'Order not found' });
+    // Find the order by ID and populate user and product details
+    const order = await Order.findById(req.params.id)
+      .populate('user', 'name email') // Populating only the name and email from User
+      .populate('products.product', 'name price'); // Populating only name and price from Product
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
     res.json(order);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -32,7 +39,11 @@ const getOrderById = async (req, res) => {
 // Get all orders (Admin view)
 const getAllOrdersAdmin = async (req, res) => {
   try {
-    const orders = await Order.find().populate('user products.product');
+    // Fetch all orders and populate user and product details
+    const orders = await Order.find()
+      .populate('user', 'name email') // Populating name and email from User
+      .populate('products.product', 'name price'); // Populating name and price from Product
+
     res.json(orders);
   } catch (error) {
     res.status(500).json({ message: error.message });

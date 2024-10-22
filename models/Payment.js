@@ -1,23 +1,13 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 const paymentSchema = new mongoose.Schema({
-    order: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Order',  // References the Order model (1:1 relationship)
-      required: true
-    },
-    payment_method: {
-      type: String,  // e.g., Stripe, PayPal, etc.
-      required: true
-    },
-    status: {
-      type: String,
-      enum: ['pending', 'completed'],
-      default: 'pending'
-    }
-  }, { timestamps: true });
-  
-  const Payment = mongoose.model('Payment', paymentSchema);
-  
-  module.exports = Payment;
-  
+    order: { type: mongoose.Schema.Types.ObjectId, ref: 'Order', required: true },
+    payment_method: { type: String, required: true },
+    stripe_payment_id: { type: String, required: true }, // Store Stripe payment ID
+    amount: { type: Number, required: true }, // Store the amount
+    createdAt: { type: Date, default: Date.now },
+});
+
+const Payment = mongoose.model('Payment', paymentSchema);
+
+module.exports = Payment;

@@ -6,11 +6,12 @@ const {
   getAllOrdersAdmin,
   updateOrderStatus,
 } = require('../controllers/orderController');
+const authMiddleware = require('../middleware/authMiddleware'); // Import the auth middleware
 
-// Order Routes
-router.post('/orders', createOrder);                    // Create a new order
-router.get('/orders/:id', getOrderById);                // Get an order by ID
-router.get('/orders', getAllOrdersAdmin);               // Get all orders (Admin)
-router.put('/orders/:id', updateOrderStatus);           // Update order status
+// Order Routes with Authentication
+router.post('/orders', authMiddleware, createOrder);                 // Create a new order (Authenticated)
+router.get('/orders/:id', authMiddleware, getOrderById);             // Get an order by ID (Authenticated)
+router.get('/orders', authMiddleware, getAllOrdersAdmin);            // Get all orders (Admin view) (Authenticated)
+router.put('/orders/:id', authMiddleware, updateOrderStatus);        // Update order status (Authenticated)
 
 module.exports = router;

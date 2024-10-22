@@ -54,7 +54,7 @@ exports.login = async (req, res) => {
         console.log('User Details:', user);
         
         if (!isMatch) {
-            return res.status(401).json({ message: 'Invalid email or password' });
+            return res.status(401).json({ message: 'Invalid email  password' });
         }
 
         // If the passwords match, create a token
