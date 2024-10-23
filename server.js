@@ -1,12 +1,16 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const userRoutes = require('./routes/userRoutes');
+const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes'); // Import product routes
 // const productRoutes = require('./routes/productRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+
+const userRoutes = require('./routes/userRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const emailRoutes = require('./routes/emailRoutes');
 const cors = require('cors');
 dotenv.config();
 
@@ -24,7 +28,7 @@ mongoose.connect(process.env.MONGO_URI)
     .catch(err => console.log(err));
 
 // Use user authentication routes
-app.use('/api/auth', userRoutes);
+app.use('/api/auth', authRoutes);
 
 // Use product routes
 app.use('/api', productRoutes);  // Add product routes
@@ -34,6 +38,11 @@ app.use('/api', productRoutes);  // Add product routes
 app.use('/api', cartRoutes);      // Cart management routes
 app.use('/api', orderRoutes);     // Order management routes
 app.use('/api', paymentRoutes);   // Payment management routes
+
+
+app.use('/api/users', userRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/email', emailRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 5000;

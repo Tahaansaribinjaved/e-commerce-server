@@ -27,7 +27,7 @@
 
 5. **User Profile**
    - `GET /api/users/:id`
-   - `PUT /api/users/:id`
+   - `PUT /api/users/:id` 
 
 6. **Admin Management**
    - `GET /api/admin/products`

@@ -31,7 +31,7 @@ exports.createPayment = async (req, res) => {
         });
 
         await payment.save();
-        res.status(201).json(payment);
+        res.status(201).json({payment,status:paymentIntent.status});
     } catch (error) {
         console.error('Stripe error:', error);
         res.status(500).json({ message: 'Error processing payment', error: error.message });

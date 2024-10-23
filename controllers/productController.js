@@ -119,10 +119,10 @@ const getFeaturedProducts = async (req, res) => {
 // Export all controllers
 module.exports = {
   createProduct,
-  getAllProductsAdmin,
   updateProduct,
   deleteProduct,
   getAdminSummary,
+  getAllProductsAdmin,
   getAllProductsUser,
   getProductById,
   getFeaturedProducts,

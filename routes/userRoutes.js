@@ -1,12 +1,9 @@
-// server/routes/userRoutes.js
 const express = require('express');
-const { register, login, forgotPassword, resetPassword } = require('../controllers/UserController');
+const { getUserProfile, updateUserProfile } = require('../controllers/userController');
 
 const router = express.Router();
 
-router.post('/register', register);
-router.post('/login', login);
-router.post('/forgot-password', forgotPassword);
-router.post('/reset-password', resetPassword);
+router.get('/:id', getUserProfile);
+router.put('/:id', updateUserProfile);
 
 module.exports = router;
