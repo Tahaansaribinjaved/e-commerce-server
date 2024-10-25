@@ -1,15 +1,16 @@
+// models/order.js
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',  // References the User model (1:N relationship)
+    ref: 'User',
     required: true
   },
   products: [{
     product: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Product'  // References the Product model (M:N relationship)
+      ref: 'Product'
     },
     quantity: {
       type: Number,
@@ -22,9 +23,14 @@ const orderSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'completed'],
+    enum: ['pending', 'completed', 'canceled', 'modified'],
     default: 'pending'
-  }
+  },
+  delivery_status: {
+    type: String,
+    enum: ['pending', 'shipped', 'delivered', 'returned'],
+    default: 'pending'
+  },
 }, { timestamps: true });
 
 const Order = mongoose.model('Order', orderSchema);

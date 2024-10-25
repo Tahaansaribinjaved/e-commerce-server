@@ -1,17 +1,30 @@
 const express = require('express');
 const router = express.Router();
-const {
-  createOrder,
-  getOrderById,
-  getAllOrdersAdmin,
-  updateOrderStatus,
-} = require('../controllers/orderController');
-const authMiddleware = require('../middleware/authMiddleware'); // Import the auth middleware
+const orderController = require('../controllers/orderController');
+const authMiddleware = require('../middleware/authMiddleware');  // Ensure auth is imported
 
-// Order Routes with Authentication
-router.post('/orders', authMiddleware, createOrder);                 // Create a new order (Authenticated)
-router.get('/orders/:id', authMiddleware, getOrderById);             // Get an order by ID (Authenticated)
-router.get('/orders', authMiddleware, getAllOrdersAdmin);            // Get all orders (Admin view) (Authenticated)
-router.put('/orders/:id', authMiddleware, updateOrderStatus);        // Update order status (Authenticated)
+// Create a new order (Authenticated)
+router.post('/orders', authMiddleware, orderController.createOrder); 
+
+// Get an order by ID (Authenticated)
+router.get('/orders/:id', authMiddleware, orderController.getOrderById); 
+
+// Admin: Get all orders (Authenticated)
+router.get('/orders', authMiddleware, orderController.getAllOrdersAdmin); 
+
+// Update order status (Authenticated)
+router.put('/orders/:id', authMiddleware, orderController.updateOrderStatus); 
+
+// Create COD Order (Authenticated)
+router.post('/orders/cod', authMiddleware, orderController.createCODOrder);
+
+// Cancel Order (Authenticated)
+router.put('/orders/:orderId/cancel', authMiddleware, orderController.cancelOrder);
+
+// Modify Order (Authenticated)
+router.put('/orders/:orderId/modify', authMiddleware, orderController.modifyOrder);
+
+// Mark as Delivered and Record Payment (Authenticated)
+router.put('/orders/:orderId/delivered', authMiddleware, orderController.markAsDelivered);
 
 module.exports = router;
