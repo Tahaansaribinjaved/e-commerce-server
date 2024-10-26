@@ -10,17 +10,18 @@ const {
   getProductById,
   getFeaturedProducts,
 } = require('../controllers/productController');
+const { isAuthenticated, isAdmin } = require('../middleware/authMiddleware');
 
-// Admin Routes
-router.post('/admin/products', createProduct);             // Create a product
-router.get('/admin/products', getAllProductsAdmin);        // Get all products (Admin view)
-router.put('/admin/products/:id', updateProduct);          // Update a product
-router.delete('/admin/products/:id', deleteProduct);       // Delete a product
-router.get('/admin/summary', getAdminSummary);             // Get dashboard summary
+// Admin Routes (restricted to admins)
+router.post('/admin/products', isAuthenticated, isAdmin, createProduct); // Create a product
+router.get('/admin/products', isAuthenticated, isAdmin, getAllProductsAdmin); // Get all products (Admin view)
+router.put('/admin/products/:id', isAuthenticated, isAdmin, updateProduct); // Update a product
+router.delete('/admin/products/:id', isAuthenticated, isAdmin, deleteProduct); // Delete a product
+router.get('/admin/summary', isAuthenticated, isAdmin, getAdminSummary); // Get dashboard summary
 
-// User Routes
-router.get('/products', getAllProductsUser);               // Get all products (User view)
-router.get('/products/:id', getProductById);               // Get a single product by ID
-router.get('/products?limit=4', getFeaturedProducts);      // Get featured products (for Home page)
+// User Routes (accessible by authenticated users)
+router.get('/products', isAuthenticated, getAllProductsUser); // Get all products (User view)
+router.get('/products/:id', isAuthenticated, getProductById); // Get a single product by ID
+router.get('/products/featured', isAuthenticated, getFeaturedProducts); // Get featured products (for Home page)
 
 module.exports = router;

@@ -1,30 +1,35 @@
 const express = require('express');
+const { 
+  createOrder, 
+  getOrderById, 
+  getAllOrders, 
+  updateOrderStatus, 
+  cancelOrder, 
+  modifyOrder, 
+  markAsDelivered 
+} = require('../controllers/orderController');
+const { isAuthenticated, isAdmin } = require('../middleware/authMiddleware'); 
 const router = express.Router();
-const orderController = require('../controllers/orderController');
-const authMiddleware = require('../middleware/authMiddleware');  // Ensure auth is imported
 
-// Create a new order (Authenticated)
-router.post('/orders', authMiddleware, orderController.createOrder); 
+// Create a new order
+router.post('/orders', isAuthenticated, createOrder);
 
-// Get an order by ID (Authenticated)
-router.get('/orders/:id', authMiddleware, orderController.getOrderById); 
+// Get an order by ID
+router.get('/orders/:id', isAuthenticated, getOrderById);
 
-// Admin: Get all orders (Authenticated)
-router.get('/orders', authMiddleware, orderController.getAllOrdersAdmin); 
+// Get all orders (admins see all, users see their own)
+router.get('/orders', isAuthenticated, getAllOrders);
 
-// Update order status (Authenticated)
-router.put('/orders/:id', authMiddleware, orderController.updateOrderStatus); 
+// Update order status (Admin only)
+router.put('/orders/:id/status', isAuthenticated, isAdmin, updateOrderStatus);
 
-// Create COD Order (Authenticated)
-router.post('/orders/cod', authMiddleware, orderController.createCODOrder);
+// Cancel an order
+router.put('/orders/:id/cancel', isAuthenticated, cancelOrder);
 
-// Cancel Order (Authenticated)
-router.put('/orders/:orderId/cancel', authMiddleware, orderController.cancelOrder);
+// Modify an order (Admin only)
+router.put('/orders/:id/modify', isAuthenticated, isAdmin, modifyOrder);
 
-// Modify Order (Authenticated)
-router.put('/orders/:orderId/modify', authMiddleware, orderController.modifyOrder);
-
-// Mark as Delivered and Record Payment (Authenticated)
-router.put('/orders/:orderId/delivered', authMiddleware, orderController.markAsDelivered);
+// Mark an order as delivered (Admin only)
+router.post('/orders/:id/deliver', isAuthenticated, isAdmin, markAsDelivered);
 
 module.exports = router;
