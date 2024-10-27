@@ -1,24 +1,44 @@
 const Order = require('../models/Order');
 const Payment = require('../models/payment');
+const Cart = require('../models/Cart'); // Import Cart model
+const User = require('../models/User'); // Import User model
 
-// Create a new order (Generalized for any order creation)
-exports.createOrder = async (req, res) => {
+
+
+// Create a new order based on Cart
+exports.createOrderFromCart = async (req, res) => {
   try {
-    const { user, products, total_price, payment_method = 'COD' } = req.body;
+    const { _id: userId } = req.user; // Extract user ID from the request
 
+    // Fetch cart data for the user
+    const cart = await Cart.findOne({ user: userId })
+      .populate('products.product', 'name price')
+      .populate('user', 'name email');
+
+    if (!cart) return res.status(404).json({ success: false, message: 'Cart not found for user' });
+
+    // Extract cart data to initialize order
     const newOrder = new Order({
-      user,
-      products,
-      total_price,
-      payment_method,
-      status: 'pending', // Setting a default status for all new orders
-      delivery_status: 'pending'
+      user: cart.user,
+      products: cart.products,
+      total_price: cart.total_price,
+      payment_method: 'COD',
+      status: 'pending',
+      delivery_status: 'pending',
     });
 
+    // Save the new order
     const savedOrder = await newOrder.save();
-    res.status(201).json({ success: true, order: savedOrder, message: 'Order created successfully.' });
+
+    // Add the new order to the user's order history
+    await User.findByIdAndUpdate(userId, { $push: { orderHistory: savedOrder._id } });
+
+    // Clear the user's cart after creating the order
+    await Cart.deleteOne({ user: userId });
+
+    res.status(201).json({ success: true, order: savedOrder, message: 'Order created successfully from cart.' });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to create order', error: error.message });
+    res.status(500).json({ success: false, message: 'Failed to create order from cart', error: error.message });
   }
 };
 
@@ -37,10 +57,10 @@ exports.getOrderById = async (req, res) => {
   }
 };
 
-// Admin: Get all orders (can be reused for user-specific order fetching too)
+// Admin: Get all orders
 exports.getAllOrders = async (req, res) => {
   try {
-    const query = req.user.isAdmin ? {} : { user: req.user._id };  // Admin fetches all, user fetches own orders
+    const query = req.user.role=='admin' ? {} : { user: req.user._id };
 
     const orders = await Order.find(query)
       .populate('user', 'name email')
@@ -52,7 +72,7 @@ exports.getAllOrders = async (req, res) => {
   }
 };
 
-// Update order status (Generalized for status and delivery status updates)
+// Update order status
 exports.updateOrderStatus = async (req, res) => {
   try {
     const { status, delivery_status } = req.body;
@@ -72,7 +92,7 @@ exports.updateOrderStatus = async (req, res) => {
   }
 };
 
-// Cancel an order (Reused similar logic with status)
+// Cancel an order
 exports.cancelOrder = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
@@ -88,7 +108,7 @@ exports.cancelOrder = async (req, res) => {
   }
 };
 
-// Modify an order (Same controller handles both product and price modifications)
+// Modify an order
 exports.modifyOrder = async (req, res) => {
   try {
     const { products, total_price } = req.body;
@@ -107,7 +127,7 @@ exports.modifyOrder = async (req, res) => {
   }
 };
 
-// Mark as Delivered and Record Payment (Generalized controller)
+// Mark as Delivered and Record Payment
 exports.markAsDelivered = async (req, res) => {
   try {
     const { amount } = req.body;

@@ -5,7 +5,7 @@ const Product = require('../models/Product'); // Assuming you have a Product mod
 exports.getCart = async (req, res) => {
     console.log('User:', req.user); // Log the user object
     try {
-        const cart = await Cart.findOne({ user: req.user.id });
+        const cart = await Cart.findOne({ user: req.user._id });
         if (!cart) {
             return res.status(404).json({ message: 'Cart not found' });
         }

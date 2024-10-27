@@ -66,32 +66,47 @@ const getAdminSummary = async (req, res) => {
   }
 };
 
-// User: Fetch All Products (User View with Pagination, Filtering, Sorting)
 const getAllProductsUser = async (req, res) => {
   try {
-    const { category, minPrice, maxPrice, sortBy, page = 1 } = req.query;
+    const { category, minPrice, maxPrice, sortBy, order = 'asc', page = 1, name } = req.query;
     const query = {};
 
+    // Filtering by category and name (case-insensitive)
     if (category) query.category = category;
+    if (name) query.name = { $regex: name, $options: 'i' };
+
+    // Price range filtering
     if (minPrice || maxPrice) {
       query.price = {};
-      if (minPrice) query.price.$gte = minPrice;
-      if (maxPrice) query.price.$lte = maxPrice;
+      if (minPrice) query.price.$gte = parseFloat(minPrice);
+      if (maxPrice) query.price.$lte = parseFloat(maxPrice);
     }
 
+    // Pagination and sorting setup
     const pageSize = 10;
     const skip = (page - 1) * pageSize;
+    const sortCriteria = sortBy ? { [sortBy]: order === 'asc' ? 1 : -1 } : {};
 
+    // Fetching products with filters, sorting, and pagination
     const products = await Product.find(query)
-      .sort(sortBy ? { price: sortBy === 'price' ? 1 : -1 } : {})
+      .sort(sortCriteria)
       .skip(skip)
       .limit(pageSize);
 
-    res.status(200).json(products);
+    // Get total count for pagination metadata
+    const totalProducts = await Product.countDocuments(query);
+
+    res.status(200).json({
+      products,
+      currentPage: page,
+      totalPages: Math.ceil(totalProducts / pageSize),
+      totalProducts,
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
 
 // User: Fetch Product by ID
 const getProductById = async (req, res) => {
@@ -109,12 +124,19 @@ const getProductById = async (req, res) => {
 // Home Page: Fetch Featured Products (Limit 4)
 const getFeaturedProducts = async (req, res) => {
   try {
-    const products = await Product.find({ isFeatured: true }).limit(4);
+    const products = await Product.find(({"isFeatured":true})).limit(4);
+    if (!products) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
     res.status(200).json(products);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.log("error")
+    res.status(500).json({ error: error.message });
   }
 };
+
+
+
 
 // Export all controllers
 module.exports = {
@@ -126,4 +148,5 @@ module.exports = {
   getAllProductsUser,
   getProductById,
   getFeaturedProducts,
+  
 };

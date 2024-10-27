@@ -31,6 +31,11 @@ const orderSchema = new mongoose.Schema({
     enum: ['pending', 'shipped', 'delivered', 'returned'],
     default: 'pending'
   },
+  payment_method:{
+    type:String,
+    default:"COD"
+
+  }
 }, { timestamps: true });
 
 const Order = mongoose.model('Order', orderSchema);

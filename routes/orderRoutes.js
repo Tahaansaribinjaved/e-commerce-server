@@ -1,6 +1,6 @@
 const express = require('express');
 const { 
-  createOrder, 
+  createOrderFromCart, 
   getOrderById, 
   getAllOrders, 
   updateOrderStatus, 
@@ -12,7 +12,7 @@ const { isAuthenticated, isAdmin } = require('../middleware/authMiddleware');
 const router = express.Router();
 
 // Create a new order
-router.post('/orders', isAuthenticated, createOrder);
+router.post('/orders', isAuthenticated, createOrderFromCart);
 
 // Get an order by ID
 router.get('/orders/:id', isAuthenticated, getOrderById);

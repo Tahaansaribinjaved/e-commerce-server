@@ -26,9 +26,10 @@ mongoose.connect(process.env.MONGO_URI)
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/products', productRoutes);    // Products-related routes
-app.use('/api/cart', cartRoutes);           // Cart-related routes
-app.use('/api/orders', orderRoutes);        // Order-related routes
+app.use('/api', productRoutes);    // Products-related routes
+
+app.use('/api', cartRoutes);           // Cart-related routes
+app.use('/api', orderRoutes);        // Order-related routes
 // app.use('/api/payments', paymentRoutes);    // Payment-related routes
 app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);

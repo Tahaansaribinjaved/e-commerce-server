@@ -9,6 +9,7 @@ const {
   getAllProductsUser,
   getProductById,
   getFeaturedProducts,
+  
 } = require('../controllers/productController');
 const { isAuthenticated, isAdmin } = require('../middleware/authMiddleware');
 
@@ -22,6 +23,6 @@ router.get('/admin/summary', isAuthenticated, isAdmin, getAdminSummary); // Get 
 // User Routes (accessible by authenticated users)
 router.get('/products', isAuthenticated, getAllProductsUser); // Get all products (User view)
 router.get('/products/:id', isAuthenticated, getProductById); // Get a single product by ID
-router.get('/products/featured', isAuthenticated, getFeaturedProducts); // Get featured products (for Home page)
+router.get('/featuredProducts', getFeaturedProducts); // Get featured products (for Home page)
 
 module.exports = router;
